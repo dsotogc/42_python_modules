@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 def input_temperature(temp_str: str) -> int:
-	temp_int: int = int(temp_str)
-	if temp_int > 40:
-		raise ValueError(f"{temp_int}ºC is too hot for plants (max 40ºC)")
-	elif temp_int < 0:
-		raise ValueError(f"{temp_int}ºC is too cold for plants (min 0ºC)")
-	return temp_int 
-    
+    temp_int: int = int(temp_str)
+    if temp_int > 40:
+        raise ValueError(f"{temp_int}ºC is too hot for plants (max 40ºC)")
+    elif temp_int < 0:
+        raise ValueError(f"{temp_int}ºC is too cold for plants (min 0ºC)")
+    return temp_int
 
 
 def test_temperature() -> None:
