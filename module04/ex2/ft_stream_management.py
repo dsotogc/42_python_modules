@@ -36,12 +36,13 @@ def main() -> None:
             if nfile_name:
                 new_file: IO[str] | None = None
                 try:
-                    new_file = open(nfile_name, "w")
                     print(f"Saving data to '{nfile_name}'")
+                    new_file = open(nfile_name, "w")
                     new_file.write(new_content)
                 except IOError as e:
-                    print(f"[STDERR] Error creating file '{nfile_name}': {e}",
+                    print(f"[STDERR] Error opening file '{nfile_name}': {e}",
                           file=sys.stderr)
+                    print("Data not saved.")
                 finally:
                     if new_file:
                         new_file.close()
