@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+from typing import IO
+
+
+def main() -> None:
+    if (len(sys.argv) != 2):
+        print("[STDERR] Usage: ft_ancient_text.py <file>", file=sys.stderr)
+    else:
+        file: IO[str] | None = None
+        success: bool = False
+        try:
+            print("=== Cyber Archives Recovery ===")
+            print(f"Accessing file '{sys.argv[1]}'")
+            file = open(sys.argv[1])
+            content: str = file.read()
+            new_content: str = content.replace('\n', "#\n") + "#"
+            print(f"---\n\n{content}\n\n---")
+            success = True
+        except IOError as e:
+            print(
+                f"[STDERR] Error opening file '{sys.argv[1]}': {e}",
+                file=sys.stderr)
+        finally:
+            if file:
+                file.close()
+                print(f"File '{sys.argv[1]}' closed.")
+
+        if success:
+            print("\nTransform data:")
+            print(f"---\n\n{new_content}\n\n---")
+            sys.stdout.write("Enter new dile name (or empty): ")
+            sys.stdout.flush()
+            nfile_name = sys.stdin.readline().strip('\n')
+            if nfile_name:
+                new_file: IO[str] | None = None
+                try:
+                    new_file = open(nfile_name, "w")
+                    print(f"Saving data to '{nfile_name}'")
+                    new_file.write(new_content)
+                except IOError as e:
+                    print(f"[STDERR] Error creating file '{nfile_name}': {e}",
+                          file=sys.stderr)
+                finally:
+                    if new_file:
+                        new_file.close()
+                        print(f"Data saved in file '{nfile_name}'")
+
+
+if __name__ == "__main__":
+    main()
