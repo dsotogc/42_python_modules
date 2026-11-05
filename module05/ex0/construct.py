@@ -16,7 +16,7 @@ def main() -> None:
         print("\nReagent installation path:")
         print(site.getsitepackages()[0])
     else:
-        print("LABORATORY STATUS: You are working open\n")
+        print("LABORATORY STATUS: You are working in the open\n")
         print(f"Current Python: {sys.executable}")
         print("Virtual Environment: None detected\n")
 
