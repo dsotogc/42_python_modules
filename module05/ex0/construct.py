@@ -2,6 +2,7 @@ import sys
 import os
 import site
 
+
 def main() -> None:
     venv_active: bool = sys.prefix != sys.base_prefix
     if venv_active:
@@ -27,6 +28,10 @@ def main() -> None:
         print("source lab_env/bin/activate # On Unix")
         print("lab_env\\Scripts\\activate # On Windows\n")
         print("Then run this program again.")
+
+    print("\nGlobal package locations (outside virtual environment):")
+    for path in site.getsitepackages([sys.base_prefix]):
+        print(path)
 
 
 if __name__ == "__main__":
