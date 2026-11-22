@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 
 class DataProcessor(ABC):
 
-    def __init__(self):
-        self.values: list[Any] = []
+    def __init__(self) -> None:
+        self.values: list[str] = []
         self.n_outputs: int = 0
 
     @abstractmethod
@@ -17,8 +17,9 @@ class DataProcessor(ABC):
         pass
 
     def output(self) -> tuple[int, str]:
+        value = self.values.pop(0)
         self.n_outputs += 1
-        return (self.n_outputs - 1, self.values.pop(0))
+        return (self.n_outputs - 1, value)
 
 
 class NumericProcessor(DataProcessor):
@@ -30,7 +31,7 @@ class NumericProcessor(DataProcessor):
             return all(isinstance(n, (int, float)) for n in data)
         return True
 
-    def ingest(self, data: int | float | list[int | float]):
+    def ingest(self, data: int | float | list[int | float]) -> None:
         if not self.validate(data):
             raise ValueError("Improper numeric data")
         if isinstance(data, list):
@@ -48,7 +49,7 @@ class TextProcessor(DataProcessor):
             return all(isinstance(s, str) for s in data)
         return True
 
-    def ingest(self, data: int | float | list[int | float]):
+    def ingest(self, data: str | list[str]) -> None:
         if not self.validate(data):
             raise ValueError("Improper text data")
         if isinstance(data, list):
@@ -61,21 +62,27 @@ class TextProcessor(DataProcessor):
 class LogProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
         if isinstance(data, dict):
-            return all(isinstance(k, str) and isinstance(v, str) for k, v in data.items())
+            return all(
+                isinstance(k, str) and isinstance(v, str)
+                for k, v in data.items()
+            )
         if isinstance(data, list):
             return all(
                 isinstance(log, dict)
-                and all(isinstance(k, str) and isinstance(v, str) for k, v in log.items())
+                and all(
+                    isinstance(k, str) and isinstance(v, str)
+                    for k, v in log.items()
+                )
                 for log in data
             )
         return False
 
-    def ingest(self, data: dict[str, str] | list[dict[str, str]]):
+    def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
         if isinstance(data, list):
-            for l in data:
-                self.values.append(str(l))
+            for log in data:
+                self.values.append(str(log))
         else:
             self.values.append(str(data))
 
@@ -92,7 +99,7 @@ def main() -> None:
         np.ingest('foo')
     except ValueError as e:
         print(f"Got exception: {e}")
-    test_data: list[int] = [1, 2, 3, 4, 5]
+    test_data: list[int | float] = [1, 2, 3, 4, 5]
     print(f"Processing data: {test_data}")
     np.ingest(test_data)
     print("Extracting 3 values...")
@@ -104,6 +111,7 @@ def main() -> None:
     tp = TextProcessor()
     print(f"Trying to validate input '42': {tp.validate(42)}")
     test_data2: list[str] = ["Hello", "Nexus", "World"]
+    print(f"Trying to validate input {test_data2}: {tp.validate(test_data2)}")
     print(f"Processing data: {test_data2}")
     tp.ingest(test_data2)
     print("Extracting 1 value...")
@@ -114,15 +122,15 @@ def main() -> None:
     lp = LogProcessor()
     print(f"Trying to validate input 'Hello': {lp.validate('Hello')}")
     test_data3: list[dict[str, str]] = [
-        {'log_level': 'NOTICE'},
-        {'log_message': 'Connection to server'},
-        {'log_level': 'ERROR'},
-        {'log_message': 'Unauthorized!!'}
+        {'log_level': 'NOTICE', 'log_message': 'Connection to server'},
+        {'log_level': 'ERROR', 'log_message': 'Unauthorized!!'}
     ]
+    print(f"Trying to validate input {test_data3}: {lp.validate(test_data3)}")
+    print(f"Processing data: {test_data3}")
     lp.ingest(test_data3)
     print("Extracting 2 values...")
     for i in range(0, 2):
-        result: tuple[int, str] = lp.output()
+        result = lp.output()
         print(f"Log entry {result[0]}: {result[1]}")
 
 
