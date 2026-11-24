@@ -1,24 +1,21 @@
-from ex3 import CreatureFactory, FlameFactory, TransformCreatureFactory
+from ex3 import TransformCreatureFactory
+from ex3.capability import TransformCapability
 
 
 def main() -> None:
     print("Testing Creature with transform capability")
-    t_factory: CreatureFactory = TransformCreatureFactory()
+    t_factory = TransformCreatureFactory()
     base = t_factory.create_base()
     evolved = t_factory.create_evolved()
-    print("base:")
-    print(base.describe())
-    print(base.attack())
-    print(base.transform())
-    print(base.attack())
-    print(base.revert())
-
-    print("evolved:")
-    print(evolved.describe())
-    print(evolved.attack())
-    print(evolved.transform())
-    print(evolved.attack())
-    print(evolved.revert())
+    for stage, creature in [("base", base), ("evolved", evolved)]:
+        print(f"{stage}:")
+        print(creature.describe())
+        print(creature.attack())
+        if not isinstance(creature, TransformCapability):
+            raise TypeError("Factory returned a creature without transform")
+        print(creature.transform())
+        print(creature.attack())
+        print(creature.revert())
 
 
 if __name__ == "__main__":

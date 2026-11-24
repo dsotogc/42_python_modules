@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class TransformCapability(ABC):
-    def __init__(self):
-        self.transformed = False
+    def __init__(self) -> None:
+        self.transformed: bool = False
 
     @abstractmethod
     def transform(self) -> str:

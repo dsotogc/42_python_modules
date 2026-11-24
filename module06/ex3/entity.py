@@ -1,9 +1,9 @@
 from .creature import Creature
-from . capability import TransformCapability
+from .capability import TransformCapability
 
 
 class Flameling(Creature):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Flameling", "Fire")
 
     def attack(self) -> str:
@@ -11,7 +11,7 @@ class Flameling(Creature):
 
 
 class Pyrodon(Creature):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Pyrodon", "Fire/Flying")
 
     def attack(self) -> str:
@@ -19,7 +19,7 @@ class Pyrodon(Creature):
 
 
 class Shiftling(Creature, TransformCapability):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Shiftling", "Normal")
         TransformCapability.__init__(self)
 
@@ -35,10 +35,10 @@ class Shiftling(Creature, TransformCapability):
     def revert(self) -> str:
         self.transformed = False
         return f"{self.name} returns to normal."
-    
+
 
 class Morphagon(Creature, TransformCapability):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Morphagon", "Normal/Dragon")
         TransformCapability.__init__(self)
 

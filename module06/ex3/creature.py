@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-import typing
 
 
 class Creature(ABC):
-    def __init__(self, name: str = "unknown", type: str = "unknown"):
+    def __init__(
+        self, name: str = "unknown", type: str = "unknown"
+    ) -> None:
         self.name: str = name
         self.type: str = type
 
@@ -13,6 +14,3 @@ class Creature(ABC):
 
     def describe(self) -> str:
         return f"{self.name} is a {self.type} type Creature"
-
-    
-    
