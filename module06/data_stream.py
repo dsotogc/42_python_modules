@@ -80,11 +80,14 @@ class LogProcessor(DataProcessor):
     def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
-        if isinstance(data, list):
-            for log in data:
+        logs = data if isinstance(data, list) else [data]
+        for log in logs:
+            if "log_level" in log and "log_message" in log:
+                self.values.append(
+                    f"{log['log_level']}: {log['log_message']}"
+                )
+            else:
                 self.values.append(str(log))
-        else:
-            self.values.append(str(data))
 
 
 class DataStream:

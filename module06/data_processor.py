@@ -80,11 +80,14 @@ class LogProcessor(DataProcessor):
     def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
-        if isinstance(data, list):
-            for log in data:
+        logs = data if isinstance(data, list) else [data]
+        for log in logs:
+            if "log_level" in log and "log_message" in log:
+                self.values.append(
+                    f"{log['log_level']}: {log['log_message']}"
+                )
+            else:
                 self.values.append(str(log))
-        else:
-            self.values.append(str(data))
 
 
 def main() -> None:
@@ -105,7 +108,7 @@ def main() -> None:
     print("Extracting 3 values...")
     for i in range(0, 3):
         result: tuple[int, str] = np.output()
-        print(f"Numeric value: {result[0]}: {result[1]}")
+        print(f"Numeric value {result[0]}: {result[1]}")
 
     print("\nTesting Text Processor...")
     tp = TextProcessor()

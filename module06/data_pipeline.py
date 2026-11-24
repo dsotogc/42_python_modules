@@ -80,11 +80,14 @@ class LogProcessor(DataProcessor):
     def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
-        if isinstance(data, list):
-            for log in data:
-                self.values.append(f"{log['log_level']}: {log['log_message']}")
-        else:
-            self.values.append(str(data))
+        logs = data if isinstance(data, list) else [data]
+        for log in logs:
+            if "log_level" in log and "log_message" in log:
+                self.values.append(
+                    f"{log['log_level']}: {log['log_message']}"
+                )
+            else:
+                self.values.append(str(log))
 
 
 class ExportPlugin(Protocol):
@@ -92,19 +95,21 @@ class ExportPlugin(Protocol):
         pass
 
 
-class ExportPluginCSV():
+class ExportPluginCSV:
     def process_output(self, data: list[tuple[int, str]]) -> None:
-        result:list[str] = []
-        for item in data:
-            _, content = item
-            result.append(content)
+        result: list[str] = []
+        for _, content in data:
+            result.append('"' + content.replace('"', '""') + '"')
         print(f"CSV Output:\n{','.join(result)}")
 
 
-class ExportPluginJSON():
+class ExportPluginJSON:
     def process_output(self, data: list[tuple[int, str]]) -> None:
         result: list[str] = []
         for idx, content in data:
+            content = content.replace('\\', '\\\\').replace('"', '\\"')
+            for code in range(32):
+                content = content.replace(chr(code), f'\\u{code:04x}')
             result.append(f'"item_{idx}": "{content}"')
         print(f"JSON Output:\n{{{', '.join(result)}}}")
 
@@ -145,14 +150,12 @@ class DataStream:
             print("No processor found, no data")
 
     def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
+        if nb < 0:
+            raise ValueError("Output count must not be negative")
         for proc in self.processors:
             data: list[tuple[int, str]] = []
-            if nb < len(proc.values):
-                for _ in range(0, nb):
-                    data.append(proc.output())
-            else:
-                for _ in range(0, len(proc.values)):
-                    data.append(proc.output())
+            for _ in range(min(nb, len(proc.values))):
+                data.append(proc.output())
             plugin.process_output(data)
 
 
@@ -172,7 +175,7 @@ def main() -> None:
     ds.register_processor(np)
     ds.register_processor(tp)
     ds.register_processor(lp)
-    
+
     print()
 
     data_batch: list[Any] = [
