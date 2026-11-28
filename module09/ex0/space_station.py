@@ -12,7 +12,7 @@ class SpaceStation(BaseModel):
     is_operational: bool = Field(default=True)
     notes: str | None = Field(default=None, max_length=200)
 
-    def print_info(self):
+    def print_info(self) -> None:
         print("Valid station created:")
         print(f"ID: {self.station_id}")
         print(f"Name: {self.name}")
@@ -48,6 +48,7 @@ def main() -> None:
         failed_station.print_info()
     except ValidationError as e:
         print(e.errors()[0]["msg"])
+
 
 if __name__ == "__main__":
     main()
